@@ -168,7 +168,7 @@ except:
     gsm = "ERROR"
 Data = Data_Check()
 
-Send = str(T)+'°C'+" "+gsm+" "+("RS232:Connected" if(Data[0]) else "RS232:Disconnected" )+" "+("RS485:Connected" if(Data[1]) else "RS485:Disconnected" )+" "+("Ethernet:Connected" if(Data[2]) else "Ethernet:Disconnected" )
+Send = str(T)+" "+gsm+" "+("RS232:Connected" if(Data[0]) else "RS232:Disconnected" )+" "+("RS485:Connected" if(Data[1]) else "RS485:Disconnected" )+" "+("Ethernet:Connected" if(Data[2]) else "Ethernet:Disconnected" )
 print(Send)
         
 
