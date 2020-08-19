@@ -76,16 +76,20 @@ def Temp_check():
 #GSM Connectivity
             
 def Gsm_Connectivity():
-    out = subprocess.Popen(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-    stdout,stderr = out.communicate()
-    a = int(unicode(stdout,'UTF-8')[152:156].strip())
-    if(a>-85):
-        return "Good"
-    elif(a<-85 and a>-100):
-        return "Average"
-    elif(a<-100):
-        return "Poor"
-    else:
+    try:
+        subprocess.check_output(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'])
+        out = subprocess.Popen(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        stdout,stderr = out.communicate()
+        a = int(unicode(stdout,'UTF-8')[152:156].strip())
+        if(a>-85):
+            return "Good"
+        elif(a<-85 and a>-100):
+            return "Average"
+        elif(a<-100):
+            return "Poor"
+        else:
+            return "Error 2"
+    except:
         return "Error"
     
 #############################################################################
@@ -155,8 +159,15 @@ def Data_Check():
     else:
         A.append(1)
     
-    return A
 
+    #Wifi
+    ps = subprocess.Popen(['iwgetid'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    try:
+        output = subprocess.check_output(('grep', 'ESSID'), stdin=ps.stdout)
+        A.append(1)
+    except subprocess.CalledProcessError:
+        A.append(0)
+    return A
 
 
     
@@ -225,7 +236,7 @@ while True:
         try:
             draw.rectangle((0,0,width,height),outline = 0,fill = 0)
             draw.text((x, top+16),    "GSM: " + Gsm_Connectivity() ,  font=font, fill=255)
-            draw.text((x,top+40),"Temp: "+ str(T),font = font, fill = 255) 
+            draw.text((x,top+40),"Temp: "+ str(T)+" deg Cel",font = font, fill = 255) 
             disp.image(image1)
             disp.display()
             time.sleep(1)
@@ -235,7 +246,7 @@ while True:
         except:
             draw.rectangle((0,0,width,height),outline = 0,fill = 0)
             draw.text((x,top+16),"GSM: ERROR",font = font , fill = 255)
-            draw.text((x,top+40),"Temp: "+str(T),font = font,fill = 255)
+            draw.text((x,top+40),"Temp: "+str(T)+" deg Cel",font = font,fill = 255)
             disp.image(image1) 
             disp.display()
             time.sleep(1)
@@ -244,18 +255,33 @@ while True:
             i+=1
        
     i = 0
-        
+    B = []
+    B = Data_Check()    
     while(i<=5):
-        B = []
+       
         
         #disp.clear()
         #disp.display()
         draw.rectangle((0,0,width,height),outline = 0,fill = 0)
-        B = Data_Check()
         print(B)
         draw.text((x, top),    "RS232: " + ("OK" if B[0] else "NOT OK"),  font=font, fill=255)
         draw.text((x, top+16),    "RS485: " + ("OK" if B[1] else "NOT OK"),  font=font, fill=255)
-        draw.text((x, top+34),    "Ethernet: " + ("OK" if B[2] else "NOT OK"),  font=font, fill=255)
+        disp.image(image1)
+        disp.display()
+        time.sleep(1)
+       # SaveFile()
+        i+=1
+        
+    i = 0
+    while(i<=5):
+       
+        
+        #disp.clear()
+        #disp.display()
+        draw.rectangle((0,0,width,height),outline = 0,fill = 0)
+        print(B)
+        draw.text((x, top+16),    "Ethernet: " + ("OK" if B[2] else "NOT OK"),  font=font, fill=255)
+        draw.text((x, top+40),    "Wifi: " + ("OK" if B[3] else "NOT OK"),  font=font, fill=255)
         disp.image(image1)
         disp.display()
         time.sleep(1)
@@ -267,15 +293,15 @@ while True:
         cmd = "hostname -I | cut -d\' \' -f1"
         IP = subprocess.check_output(cmd, shell = True )
         #IP = subprocess.check_output(['hostname','--all-ip-addresses'])
-        cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-        CPU = subprocess.check_output(cmd, shell = True )
+        #cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
+        #CPU = subprocess.check_output(cmd, shell = True )
         draw.rectangle((0,0,width,height),outline= 0 ,fill = 0)
         draw.text((x, top+16),       "IP: " + str(IP),  font=font, fill=255)
-        draw.text((x, top+40),     str(CPU), font=font, fill=255)        
+        #draw.text((x, top+40),     str(CPU), font=font, fill=255)        
         disp.image(image1)
         disp.display()
         print("IP",str(IP))
-        print(str(CPU))     
+        #print(str(CPU))     
         time.sleep(1)
         i+=1
    
@@ -296,17 +322,5 @@ while True:
        # SaveFile()
         i+=1  
         
-
-
-
-
-    
-    
-    
-        
-    
-       
-    
-    
 
 
