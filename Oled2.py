@@ -80,7 +80,7 @@ def Gsm_Connectivity():
         subprocess.check_output(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stderr = STDOUT,timeout = 3)
         out = subprocess.Popen(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         stdout,stderr = out.communicate()
-        a = int(unicode(stdout,'UTF-8')[152:156].strip())
+        a = int(str(stdout,'UTF-8')[152:156].strip())
         if(a>-85):
             return "Good"
         elif(a<-85 and a>-100):
@@ -153,7 +153,7 @@ def Data_Check():
     #Ethernet        
     out = subprocess.Popen(['ethtool','eth0'],stdout = subprocess.PIPE,stderr=subprocess.STDOUT)
     stdout,stderr = out.communicate()
-    x = unicode(stdout,'UTF-8')[-3:].strip()
+    x = str(stdout,'UTF-8')[-3:].strip()
     if(x=='no'):
         A.append(0)
     else:
@@ -236,21 +236,21 @@ while True:
         try:
             draw.rectangle((0,0,width,height),outline = 0,fill = 0)
             draw.text((x, top+16),    "GSM: " + Gsm_Connectivity() ,  font=font, fill=255)
-            draw.text((x,top+40),"Temp: "+ str(T)+" deg Cel",font = font, fill = 255) 
+            draw.text((x,top+40),"Temp: "+ str(int(T))+" deg C",font = font, fill = 255) 
             disp.image(image1)
             disp.display()
             time.sleep(1)
-            print("GSM "+ Gsm_Connectivity(), "Temp "+str(T))
+            print("GSM "+ Gsm_Connectivity(), "Temp "+str(int(T)))
            # SaveFile()
             i+=1
         except:
             draw.rectangle((0,0,width,height),outline = 0,fill = 0)
             draw.text((x,top+16),"GSM: ERROR",font = font , fill = 255)
-            draw.text((x,top+40),"Temp: "+str(T)+" deg Cel",font = font,fill = 255)
+            draw.text((x,top+40),"Temp: "+str(int(T))+" deg C",font = font,fill = 255)
             disp.image(image1) 
             disp.display()
             time.sleep(1)
-            print("GSM ERRROR","Temp "+str(T))
+            print("GSM ERRROR","Temp "+str(int(T)))
            # SaveFile()
             i+=1
        
@@ -264,8 +264,8 @@ while True:
         #disp.display()
         draw.rectangle((0,0,width,height),outline = 0,fill = 0)
         print(B)
-        draw.text((x, top),    "RS232: " + ("OK" if B[0] else "NOT OK"),  font=font, fill=255)
-        draw.text((x, top+16),    "RS485: " + ("OK" if B[1] else "NOT OK"),  font=font, fill=255)
+        draw.text((x, top+16),    "RS232: " + ("OK" if B[0] else "NOT OK"),  font=font, fill=255)
+        draw.text((x, top+40),    "RS485: " + ("OK" if B[1] else "NOT OK"),  font=font, fill=255)
         disp.image(image1)
         disp.display()
         time.sleep(1)
@@ -280,8 +280,8 @@ while True:
         #disp.display()
         draw.rectangle((0,0,width,height),outline = 0,fill = 0)
         print(B)
-        draw.text((x, top+16),    "Ethernet: " + ("OK" if B[2] else "NOT OK"),  font=font, fill=255)
-        draw.text((x, top+40),    "Wifi: " + ("OK" if B[3] else "NOT OK"),  font=font, fill=255)
+        draw.text((x, top+16),    "LAN: " + ("OK" if B[2] else "NOT OK"),  font=font, fill=255)
+        draw.text((x, top+40),    "Wi-fi: " + ("OK" if B[3] else "NOT OK"),  font=font, fill=255)
         disp.image(image1)
         disp.display()
         time.sleep(1)
@@ -296,11 +296,11 @@ while True:
         #cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
         #CPU = subprocess.check_output(cmd, shell = True )
         draw.rectangle((0,0,width,height),outline= 0 ,fill = 0)
-        draw.text((x, top+16),       "IP: " + str(IP),  font=font, fill=255)
+        draw.text((x, top+16),  str(IP.decode('utf-8')),  font=font, fill=255)
         #draw.text((x, top+40),     str(CPU), font=font, fill=255)        
         disp.image(image1)
         disp.display()
-        print("IP",str(IP))
+        print("IP",str(IP.decode('utf-8')))
         #print(str(CPU))     
         time.sleep(1)
         i+=1
@@ -312,12 +312,12 @@ while True:
         MemUsage = subprocess.check_output(cmd, shell = True )
         cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
         Disk = subprocess.check_output(cmd, shell = True )
-        draw.text((x, top+16),    str(MemUsage),  font=font, fill=255)
-        draw.text((x, top+40),    str(Disk),  font=font, fill=255)
+        draw.text((x, top+16),    str(MemUsage.decode('utf-8')),  font=font-5, fill=255)
+        draw.text((x, top+40),    str(Disk.decode('utf-8')),  font=font-5, fill=255)
         disp.image(image1)
         disp.display()
-        print(str(MemUsage))
-        print(str(Disk))
+        print(str(MemUsage.decode('utf-8'))[:14])
+        print(str(Disk.decode('utf-8'))[:13])
         time.sleep(1)
        # SaveFile()
         i+=1  
