@@ -77,7 +77,7 @@ def Temp_check():
             
 def Gsm_Connectivity():
     try:
-        subprocess.check_output(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'])
+        subprocess.check_output(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stderr = STDOUT,timeout = 3)
         out = subprocess.Popen(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         stdout,stderr = out.communicate()
         a = int(unicode(stdout,'UTF-8')[152:156].strip())
