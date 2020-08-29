@@ -27,19 +27,34 @@ def read_temp_raw(device_file):
  
     
 def Temp_check():
-    while True:
-        global alert
-        global C
-        global T
-        alert = 0
-        C = 0
-        os.system('modprobe w1-gpio')
-        os.system('modprobe w1-therm')
+    
+    global alert
+    global C
+    global T
+    alert = 0
+    print("IN TEMP")
+    C = 0
+    os.system('modprobe w1-gpio')
+    os.system('modprobe w1-therm')
  
-        base_dir = '/sys/bus/w1/devices/'
-        device_folder = glob.glob(base_dir + '28*')[0]
-        device_file = device_folder + '/w1_slave'
+    base_dir = '/sys/bus/w1/devices/'
+    device_folder = glob.glob(base_dir + '28*')[0]
+    device_file = device_folder + '/w1_slave'
         
+    lines = read_temp_raw(device_file)
+    while lines[0].strip()[-3:] != 'YES':
+        time.sleep(0.2)
+        lines = read_temp_raw(device_file)
+    equals_pos = lines[1].find('t=')
+    if equals_pos != -1:
+        temp_string = lines[1][equals_pos+2:]
+        T = float(temp_string) / 1000.0
+        
+        
+    while(T>45):
+        time.sleep(1)
+        C+=1
+            
         lines = read_temp_raw(device_file)
         while lines[0].strip()[-3:] != 'YES':
             time.sleep(0.2)
@@ -48,25 +63,11 @@ def Temp_check():
         if equals_pos != -1:
             temp_string = lines[1][equals_pos+2:]
             T = float(temp_string) / 1000.0
-        
-        
-        while(T>45):
-            time.sleep(1)
-            C+=1
             
-            lines = read_temp_raw(device_file)
-            while lines[0].strip()[-3:] != 'YES':
-                time.sleep(0.2)
-                lines = read_temp_raw(device_file)
-            equals_pos = lines[1].find('t=')
-            if equals_pos != -1:
-                temp_string = lines[1][equals_pos+2:]
-                T = float(temp_string) / 1000.0
-            
-            if(C>60):
-                break
         if(C>60):
-            alert = 1        
+            break
+    if(C>60):
+        alert = 1        
     
 	
 #############################################################################
@@ -160,17 +161,15 @@ def Data_Check():
 
 
     
-background_thread = Thread(target=Temp_check)
-background_thread.start()
 try:
     gsm = Gsm_Connectivity()
 except:
     gsm = "ERROR"
 Data = Data_Check()
-
+Temp_check()
 Send = str(T)+" "+gsm+" "+("RS232:Connected" if(Data[0]) else "RS232:Disconnected" )+" "+("RS485:Connected" if(Data[1]) else "RS485:Disconnected" )+" "+("Ethernet:Connected" if(Data[2]) else "Ethernet:Disconnected" )
 print(Send)
-        
+  
 
 
 

@@ -28,6 +28,7 @@ def read_temp_raw(device_file):
     
 def Temp_check():
     while True:
+        #print("In temp")
         global alert
         global C
         global T
@@ -228,7 +229,7 @@ background_thread.start()
 
 while True:
     draw.rectangle((0,0,width,height),outline=0,fill=0)
-    
+    #time.sleep(20)
     i = 0
     while(i<=5):
         #disp.clear()
@@ -312,12 +313,13 @@ while True:
         MemUsage = subprocess.check_output(cmd, shell = True )
         cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
         Disk = subprocess.check_output(cmd, shell = True )
-        draw.text((x, top+16),    str(MemUsage.decode('utf-8')),  font=font-5, fill=255)
-        draw.text((x, top+40),    str(Disk.decode('utf-8')),  font=font-5, fill=255)
+        font1  = ImageFont.truetype('DejaVuSans.ttf',10)
+        draw.text((x, top+16),    str(MemUsage.decode('utf-8')),  font=font1, fill=255)
+        draw.text((x, top+40),    str(Disk.decode('utf-8')),  font=font1, fill=255)
         disp.image(image1)
         disp.display()
-        print(str(MemUsage.decode('utf-8'))[:14])
-        print(str(Disk.decode('utf-8'))[:13])
+        print(str(MemUsage.decode('utf-8'))[5:14])
+        print(str(Disk.decode('utf-8'))[6:13])
         time.sleep(1)
        # SaveFile()
         i+=1  
