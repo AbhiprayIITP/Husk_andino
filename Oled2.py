@@ -78,10 +78,18 @@ def Temp_check():
             
 def Gsm_Connectivity():
     try:
-        subprocess.check_output(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stderr = STDOUT,timeout = 3)
+        #subprocess.check_output(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stderr = subprocess.STDOUT,timeout = 3)
         out = subprocess.Popen(['sudo','qmicli','-d','/dev/cdc-wdm0','--nas-get-signal-strength'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         stdout,stderr = out.communicate()
-        a = int(str(stdout,'UTF-8')[152:156].strip())
+        a = str(stdout,'UTF-8')
+        a = a[a.find('RSSI'):a.find('RSSI')+35]
+        b = [i for i in a if i.isdigit()]
+        if (len(b) == 0):
+            return "Error"
+        a =-1*int("".join(b))
+        # print("A",a)
+          
+
         if(a>-85):
             return "Good"
         elif(a<-85 and a>-100):
@@ -90,6 +98,7 @@ def Gsm_Connectivity():
             return "Poor"
         else:
             return "Error 2"
+ 
     except:
         return "Error"
     
@@ -234,27 +243,17 @@ while True:
     while(i<=5):
         #disp.clear()
         #disp.display()
-        try:
-            draw.rectangle((0,0,width,height),outline = 0,fill = 0)
-            draw.text((x, top+16),    "GSM: " + Gsm_Connectivity() ,  font=font, fill=255)
-            draw.text((x,top+40),"Temp: "+ str(int(T))+" deg C",font = font, fill = 255) 
-            disp.image(image1)
-            disp.display()
-            time.sleep(1)
-            print("GSM "+ Gsm_Connectivity(), "Temp "+str(int(T)))
+        
+        draw.rectangle((0,0,width,height),outline = 0,fill = 0)
+        draw.text((x, top+16),    "GSM: " + Gsm_Connectivity() ,  font=font, fill=255)
+        draw.text((x,top+40),"Temp: "+ str(int(T))+chr(223)+"C",font = font, fill = 255) 
+        disp.image(image1)
+        disp.display()
+        time.sleep(1)
+        print("GSM "+ Gsm_Connectivity(), "Temp "+str(int(T)))
            # SaveFile()
-            i+=1
-        except:
-            draw.rectangle((0,0,width,height),outline = 0,fill = 0)
-            draw.text((x,top+16),"GSM: ERROR",font = font , fill = 255)
-            draw.text((x,top+40),"Temp: "+str(int(T))+" deg C",font = font,fill = 255)
-            disp.image(image1) 
-            disp.display()
-            time.sleep(1)
-            print("GSM ERRROR","Temp "+str(int(T)))
-           # SaveFile()
-            i+=1
-       
+        i+=1
+          
     i = 0
     B = []
     B = Data_Check()    
