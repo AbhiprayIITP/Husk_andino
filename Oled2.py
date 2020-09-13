@@ -1,3 +1,4 @@
+
 import os
 import glob
 import time
@@ -15,6 +16,10 @@ import subprocess
 alert = 0
 C = 0
 T = 0
+
+
+
+
 ##############################################################################
 
 #Temperature
@@ -100,7 +105,7 @@ def Gsm_Connectivity():
             return "Error 2"
  
     except:
-        return "Error"
+        return "Error3"
     
 #############################################################################
 
@@ -317,8 +322,10 @@ while True:
         draw.text((x, top+40),    str(Disk.decode('utf-8')),  font=font1, fill=255)
         disp.image(image1)
         disp.display()
-        print(str(MemUsage.decode('utf-8'))[5:14])
-        print(str(Disk.decode('utf-8'))[6:13])
+        mem = list(map(int,str(MemUsage.decode('utf-8'))[5:12].split("/")))
+        print(str(int((mem[0]/mem[1])*100))+" %")
+        dis = list(map(int,str(Disk.decode('utf-8'))[6:10].split("/")))
+        print(str(int((dis[0]/dis[1])*100))+ " %")
         time.sleep(1)
        # SaveFile()
         i+=1  
